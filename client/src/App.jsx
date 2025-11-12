@@ -1,8 +1,19 @@
 import React from 'react'
+import { Route, Routes} from 'react-router-dom'
+import Home from './pages/Home.jsx'
+import ApplyJob from './pages/ApplyJob.jsx'
+import Applications from './pages/Applications.jsx'
 
 const App = () => {
   return (
-    <div className="p-8 bg-blue-100 text-white">App</div>
+    <div>
+      <Routes>
+        <Route path='/' element ={<Home />} />
+        <Route path='/apply-job/:id' element ={<ApplyJob />} />
+        <Route path='/applications' element ={<Applications />} />
+
+      </Routes>
+    </div>
   )
 }
 
