@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { assets } from "../assets/assets";
+import { AppContext } from "../context/AppContext";
 
 const RecruiterLogin = () => {
   const [state, setState] = useState("Login");
@@ -9,77 +10,100 @@ const RecruiterLogin = () => {
   const [image, setImage] = useState(false);
   const [isTextDataSubmited, setIsTextDataSubmited] = useState(false);
 
-  const onSubmitHandler = async (e) => {
+  const {setShowRecruiterLogin} = useContext(AppContext)
+
+  const onSubmitHandler = (e) => {
     e.preventDefault()
 
-    if(state == "Sign Up" && !isTextDataSubmited) {
-        setIsTextDataSubmited(true)
+    if (state == "Sign Up" && !isTextDataSubmited){
+      setIsTextDataSubmited(true)
     }
   }
+
+  useEffect (()=> {
+    document.body.style.overflow = 'hidden'
+
+    return ()=> {
+      document.body.style.overflow = 'unset'
+    }
+  },[])
 
   return (
     <div className="absolute top-0 left-0 right-0 bottom-0 z-10 backdrop-blur-sm bg-black/30 flex justify-center items-center">
       <form onSubmit={onSubmitHandler} className="relative bg-white p-10 rounded-xl text-slate-500">
+        {/* Title */}
         <h1 className="text-center text-2xl text-neutral-700 font-medium">
           Recruiter {state}
         </h1>
 
-        <p className="text-sm">
-          {state === "Login"
-            ? "Welcome back! please sign in to continue"
-            : "Create your recruiter account"}
-        </p>
+        <p className="text-sm">"Welcome back! please sign in to continue"</p>
 
-        {state !== "Login" && !isTextDataSubmited && (
-          <div className="border px-4 py-2 flex items-center gap-2 rounded-full mt-5">
-            <img src={assets.person_icon} alt="" />
-            <input
-              className="outline-none text-sm"
-              onChange={(e) => setName(e.target.value)}
-              value={name}
-              type="text"
-              placeholder="Company name"
-              required
-            />
-          </div>
-        )}
+        {state === "Sign Up" && isTextDataSubmited 
+        ? <>
 
-        {/* Email */}
-        <div className="border px-4 py-2 flex items-center gap-2 rounded-full mt-5">
-          <img src={assets.email_icon} alt="" />
-          <input
-            className="outline-none text-sm"
-            onChange={(e) => setEmail(e.target.value)}
-            value={email}
-            type="email"
-            placeholder="Email Id"
-            required
-          />
-        </div>
+            <div className="flex items-center gap-4 my-10">
+              <label htmlFor="image">
+                <img className="w-16 rounded-full" src={image ? URL.createObjectURL(image) : assets.upload_area} alt="" />
+                <input onChange={e => setImage(e.target.files[0])} type="file" id="image" hidden />
+              </label>
+              <p>Upload company <br /> logo</p>
 
-        {/* Password */}
-        <div className="border px-4 py-2 flex items-center gap-2 rounded-full mt-5">
-          <img src={assets.lock_icon} alt="" />
-          <input
-            className="outline-none text-sm"
-            onChange={(e) => setPassword(e.target.value)}
-            value={password}
-            type="password"
-            placeholder="Password"
-            required
-          />
-        </div>
+            </div>
 
-        <p className="text-sm text-blue-600 my-4 cursor-pointer">
-          Forgot password
-        </p>
+        </>
+          : <>
+            {state !== "Login" && (
+              <div className="border px-4 py-2 flex items-center gap-2 rounded-full mt-5">
+                <img src={assets.person_icon} alt="" />
+                <input
+                  className="outline-none text-sm"
+                  onChange={(e) => setName(e.target.value)}
+                  value={name}
+                  type="text"
+                  placeholder="Company name"
+                  required
+                />
+              </div>
+            )}
 
-        <button
-          type="submit"
-          className="bg-blue-600 w-full text-white py-2 rounded-full">
-          {state === "Login" ? "Login" : isTextDataSubmited ? 'create account' : 'next' }
+            {/* Email */}
+            <div className="border px-4 py-2 flex items-center gap-2 rounded-full mt-5">
+              <img src={assets.email_icon} alt="" />
+              <input
+                className="outline-none text-sm"
+                onChange={(e) => setEmail(e.target.value)}
+                value={email}
+                type="email"
+                placeholder="Email Id"
+                required
+              />
+            </div>
+
+            {/* Password */}
+            <div className="border px-4 py-2 flex items-center gap-2 rounded-full mt-5">
+              <img src={assets.lock_icon} alt="" />
+              <input
+                className="outline-none text-sm"
+                onChange={(e) => setPassword(e.target.value)}
+                value={password}
+                type="password"
+                placeholder="Password"
+                required
+              />
+            </div>
+          </>
+        }
+
+        {/* Forgot Password */}
+        {state === "Login" && <p className="text-sm text-blue-600 mt-4 cursor-pointer">Forgot password</p>}
+        
+
+        {/* Submit Button */}
+        <button type="submit" className="bg-blue-600 w-full text-white py-2 rounded-full mt-4">
+          {state === "Login" ? "login" : isTextDataSubmited ? "Create Account" : "Next"}
         </button>
 
+        {/* Toggle Login <-> Sign Up */}
         {state === "Login" ? (
           <p className="mt-5 text-center">
             Don't have an account?{" "}
@@ -101,6 +125,8 @@ const RecruiterLogin = () => {
             </span>
           </p>
         )}
+
+        <img onClick={e => setShowRecruiterLogin(false)} className="absolute top-5 right-5 cursor-pointer" src={assets.cross_icon} alt="" />
       </form>
     </div>
   );
